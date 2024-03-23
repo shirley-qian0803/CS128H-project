@@ -1,7 +1,7 @@
 # CS128H-project
 
 ## Group Name
-* Team
+* CS128H Squad
 
 ## Group Members and NetIDs
 * Jiayi Qian, sqian9
