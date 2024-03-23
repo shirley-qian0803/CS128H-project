@@ -14,9 +14,9 @@ We are going to build a classic 2D game known as Pac-Man. We want to realize the
 ## Technical Overview
 We want to utilize some libraries in Rust to help develop this game, for example, bracket_lib. There are many functions that helps build the fundamental blocks of our game, such as tick function, main_loop function and some pathfinding algorithms. We will use the tick function and main_loop function to handle the game state of Pac-Man. We will implement pathfinding algotithms for the ghost characters.
 
-For checkpoint 1 we plan to ...
+For checkpoint 1 we plan to realize the generation of the maze and the dots in the maze, the basic functionality of the player, and different game states.
 
-For checkpoint 2 we plan to ...
+For checkpoint 2 we plan to 
 
 ## Possible Challenges
 
