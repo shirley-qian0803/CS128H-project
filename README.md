@@ -8,8 +8,14 @@
 * Zimeng Li, zimengl4
 
 ## Project Introduction
+- Description:
+    - A multiplayer version of the classic 2D game Pac-Man
+- Goals, Objectives, and Why we chose this project:
+    - Realize the basic playing rules and playing methods of Pac-Man
+    - Devise the network functionality for Pac-Man
+    - Branch and build off of the skills we learned
+    - Familiarize ourselves with networking and graphics in Rust
 
-We are going to build a classic 2D game known as Pac-Man. We want to realize the basic playing rules and playing methods of Pac-Man. We want to devise the network functionality for Pac-Man as well.
 
 ## Technical Overview
 We want to utilize some libraries in Rust to help develop this game, for example, bracket_lib. There are many functions that helps build the fundamental blocks of our game, such as tick function, main_loop function and some pathfinding algorithms. We will use the tick function and main_loop function to handle the game state of Pac-Man. We will implement pathfinding algotithms for the ghost characters.
