@@ -22,7 +22,7 @@ fn spawn_pacman(mut commands: Commands, asset_server: Res<AssetServer>){
         .spawn(SpriteBundle {
 
             texture: asset_server.load("pacman.png"),
-            transform: Transform::from_xyz(-100.0, 0.0, 1.0).with_scale(Vec3::splat(scale_factor)),
+            transform: Transform::from_xyz(-120.0, 10.0, 1.0).with_scale(Vec3::splat(scale_factor)),
             ..default()
         })
         .insert(PacMan {
