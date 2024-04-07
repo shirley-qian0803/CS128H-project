@@ -18,6 +18,7 @@ impl Plugin for GhostPlugin {
 
 fn spawn_pacman(mut commands: Commands, asset_server: Res<AssetServer>){
     let v = vec!["cyan_ghost.png".to_string(), "pink_ghost.png".to_string(), "red_ghost.png".to_string(), "orange_ghost.png".to_string()];
+    // scaling the ghosts according to pixel number
     let scale_factor = 28.0 / 14.0;
     for i in 0..4 {
         commands
