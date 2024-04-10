@@ -20,7 +20,6 @@ fn spawn_pacman(mut commands: Commands, asset_server: Res<AssetServer>){
     let scale_factor = 28.0 / 14.0;
     commands
         .spawn(SpriteBundle {
-
             texture: asset_server.load("pacman.png"),
             transform: Transform::from_xyz(-100.0, 0.0, 1.0).with_scale(Vec3::splat(scale_factor)),
             ..default()
