@@ -12,14 +12,14 @@ use collision::CollisionPlugin;
 
 
 
-
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(DefaultPlugins)
         .add_plugins(MazePlugin)
-        .add_plugins(GhostPlugin)
         .add_plugins(PacManPlugin)
+        .add_plugins(GhostPlugin)
         .add_plugins(CollisionPlugin)
         .run();
 }
+

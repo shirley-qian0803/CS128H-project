@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 
 const PLAYER_SPEED: f32 = 1.0; // Speed at which the player moves
+
+
 pub struct PacManPlugin;
 
 impl Plugin for PacManPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_pacman);
-        app.add_systems(Update, player_movement);
+        app.add_systems(Update, pac_man_movement);
     }
 }
 
@@ -29,7 +31,7 @@ fn spawn_pacman(mut commands: Commands, asset_server: Res<AssetServer>){
         });
 }
 
-fn player_movement(keyboard_input: Res<ButtonInput<KeyCode>>,mut query: Query<(&mut Transform, &mut PacMan)>) {
+fn pac_man_movement(keyboard_input: Res<ButtonInput<KeyCode>>,mut query: Query<(&mut Transform, &mut PacMan)>) {
 
     let mut movement = Vec2::ZERO;
     // Get the set of pressed keys

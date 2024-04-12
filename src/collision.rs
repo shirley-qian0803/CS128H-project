@@ -29,3 +29,4 @@ fn collision_pacman_ghost(
         }
     }
 }
+

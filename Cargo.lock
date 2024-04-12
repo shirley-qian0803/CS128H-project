@@ -766,6 +766,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "image 0.25.1",
+ "rand",
 ]
 
 [[package]]

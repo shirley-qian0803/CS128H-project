@@ -1,9 +1,11 @@
-use bevy::{prelude::*, transform};
+use bevy::{prelude::*, transform, utils::info};
 use std::fs;
 use crate::pacman::PacMan;
 
+
 // Assuming TileType and main function are defined as before
-enum TileType {
+#[derive(PartialEq,Debug)]
+pub enum TileType {
     Wall,
     Path,
     Dot,
@@ -16,39 +18,34 @@ impl Plugin for MazePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Maze::new(load_maze("assets/maze.txt")));
         app.add_systems(Startup, spawn_maze);
-        app.add_systems(Update, pellet_collision_system);
+        app.add_systems(Update, pacman_eat_dots);
+        app.add_systems(Update, refresh_map_display);
     }
 }
 
 #[derive(Resource)]
-struct Maze {
+pub struct Maze {
+    // the maze is 13 * 38
     cells: Vec<Vec<TileType>>
 }
 
 #[derive(Component)]
 pub struct Dot;
 
+#[derive(Component)]
+struct MapTileEntity;
+
 impl Maze {
     fn new(cells: Vec<Vec<TileType>>) -> Self {
         Self { cells }
     }
-    
-    fn get_pac_man_cell(&self, pac_man_position: (f32, f32)) -> (usize, usize) {
-        // Calculate the cell indices based on Pac-Man's position
-        let x_index = (pac_man_position.0 - 120.0 / 32.0) as usize;
-        let y_index = (pac_man_position.1 / 32.0) as usize;
-
-        // Check if the indices are within the bounds of the map
-       (x_index,y_index)
-    }
-    
-    fn handle_pellet_collision(&mut self, pac_man_position: (usize, usize)) {
-        if let TileType::Dot = self.cells[pac_man_position.1][pac_man_position.0] {
-            // Handle pellet collision
-            // For example, increase score and remove the pellet from the map
-            // Increase score
-            // Remove pellet from the map
-            self.cells[pac_man_position.1][pac_man_position.0] = TileType::Path;
+    pub fn is_walkable(&self, x: usize, y: usize) -> bool {
+        match self.cells.get(y).and_then(|row| row.get(x)) {
+            Some(&TileType::Path) => true,
+            Some(&TileType::Dot) => true,
+            Some(&TileType::Cherry) => true,
+            Some(&TileType::Wall) => false,
+            _ => false,
         }
     }
 }
@@ -74,9 +71,10 @@ fn spawn_maze(mut commands: Commands, asset_server: Res<AssetServer>) {
                     });
                 }
                 TileType::Dot => {
+                    let scale_factor = 32.0 / 30.0;
                     commands.spawn(SpriteBundle {
                         texture: dot_texture_handle.clone(),
-                        transform: Transform::from_translation(position),
+                        transform: Transform::from_translation(position).with_scale(Vec3::splat(scale_factor)),
                         ..default()
                     }).insert(Dot);
                 }
@@ -111,22 +109,63 @@ fn load_maze(file_path: &str) -> Vec<Vec<TileType>> {
         .collect()
 }
 
-fn pellet_collision_system(
-    mut commands: Commands,
+fn pacman_eat_dots(
+    pacman_query: Query<&Transform, With<PacMan>>, // Assuming you have a Pacman component
     mut maze: ResMut<Maze>,
-    pac_man_query: Query<(&Transform, &PacMan)>,
-    dots_query: Query<(Entity, &Transform), With<Dot>>,
+    mut commands: Commands,
+    dot_query: Query<(Entity, &Transform), With<Dot>>, // Assuming you have a Dot component
 ) {
-    for (pac_man_transform, _) in pac_man_query.iter() {
-        let index = maze.get_pac_man_cell((pac_man_transform.translation.x, pac_man_transform.translation.y));
+    if let Some(pacman_transform) = pacman_query.iter().next() {
+        // Convert Pac-Man's position to map grid coordinates
+        let map_x = ((pacman_transform.translation.x + 615.0) / 32.0) as usize; // Adjust according to your scale
+        let map_y = (13.0 - (pacman_transform.translation.y + 100.0) / 32.0 )as usize;
+        if maze.cells[map_y][map_x] == TileType::Dot {
+            maze.cells[map_y][map_x] = TileType::Path;
+            // Despawn all dot entities (and potentially other tile types)
+            for (entity, _) in dot_query.iter() {
+                commands.entity(entity).despawn();
+            }
 
-        maze.handle_pellet_collision(index);
+            // Logic to respawn the map can be triggered here or in another system
+            // depending on your game's architecture
+        }
+    }
+}
 
-        // Integrate the despawning logic directly here
-        for (dot_entity, dot_transform) in dots_query.iter() {
-            if dot_transform.translation.distance(pac_man_transform.translation) < 1.0 {
-                commands.entity(dot_entity).despawn();
+fn refresh_map_display(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    maze: Res<Maze>,
+    existing_tiles_query: Query<Entity, With<MapTileEntity>>, // Assuming MapTileEntity marker component
+) {
+    // Despawn existing map tiles
+    for entity in existing_tiles_query.iter() {
+        commands.entity(entity).despawn();
+    }
+
+    // Respawn map tiles according to the `map` state
+    for (y, row) in maze.cells.iter().enumerate() {
+        for (x, ref tile) in row.iter().enumerate()  {
+            let position = Vec3::new(x as f32 * 32.0 - 600.0, y as f32 * -32.0 + 300.0, 0.0); 
+            if let Some(texture) = match tile {
+                TileType::Wall => Some("wall.png"),
+                TileType::Dot => Some("dot.png"),
+                TileType::Cherry => Some("cherry.png"),
+                _ => None, // Skip spawning for empty tiles
+            } {
+                let texture_handle = asset_server.load(texture);
+                commands.spawn(SpriteBundle {
+                    texture: texture_handle.clone(),
+                    transform: Transform::from_translation(position),
+                    ..Default::default()
+                }).insert(MapTileEntity); // Mark it as a map tile entity
             }
         }
     }
+}
+
+fn world_to_grid(world_position: Vec3, cell_size: f32) -> (usize, usize) {
+    let grid_x = ((world_position.x + 615.0) / cell_size).floor() as usize;
+    let grid_y = (13.0 - (world_position.y + 100.0) / cell_size).floor() as usize;
+    (grid_x, grid_y)
 }
