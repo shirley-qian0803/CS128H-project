@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::utils::info;
 use crate::pacman::PacMan;
 use crate::maze::Maze;
 use rand::prelude::*;
@@ -53,7 +52,7 @@ fn ghost_move_system(
         let ghost_grid_pos = world_to_grid(ghost_transform.translation, 32.0);
 
         // the case when the maze is walkable
-        if maze.is_walkable(ghost_grid_pos.0, ghost_grid_pos.1) {
+        if maze.is_walkable(ghost_transform.translation) {
             // Calculate the direction and distance to move towards the player
             let delta_position = (pac_man_pos.translation
                 - ghost_transform.translation)
