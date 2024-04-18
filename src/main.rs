@@ -11,7 +11,6 @@ use pacman::PacManPlugin;
 use collision::CollisionPlugin;
 
 
-
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::BLACK))
