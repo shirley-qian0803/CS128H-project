@@ -45,7 +45,7 @@ fn ghost_move_system(
     mut ghost_query: Query<(&mut Transform, &mut Ghost)>,
 
 ) {
-  
+
 
     for (mut ghost_transform, mut ghost) in ghost_query.iter_mut() {
         // Generate a random movement direction if the ghost hasn't chosen one yet
