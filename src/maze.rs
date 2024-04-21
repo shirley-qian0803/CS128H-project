@@ -1,4 +1,4 @@
-use bevy::{prelude::*, transform, utils::info};
+use bevy::prelude::*;
 use std::fs;
 use crate::pacman::PacMan;
 

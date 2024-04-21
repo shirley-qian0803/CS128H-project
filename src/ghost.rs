@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use crate::maze::Maze;
-use crate::pacman::PacMan;
 use rand::prelude::*;
 
 const GHOST_SPEED: f32 = 25.0; // Speed at which the ghost moves
@@ -44,10 +43,9 @@ fn ghost_move_system(
     time: Res<Time>,
     maze: Res<Maze>,
     mut ghost_query: Query<(&mut Transform, &mut Ghost)>,
-    pac_man_query: Query<&Transform, (With<PacMan>, Without<Ghost>)>,
+
 ) {
-    // Get Pac-Man's position from its Transform
-    let pac_man_pos = pac_man_query.single();
+  
 
     for (mut ghost_transform, mut ghost) in ghost_query.iter_mut() {
         // Generate a random movement direction if the ghost hasn't chosen one yet
