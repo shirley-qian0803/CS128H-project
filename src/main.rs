@@ -3,15 +3,12 @@ mod ghost;
 mod pacman;
 mod collision;
 
-
-
 use bevy::prelude::*;
 use maze::MazePlugin;
 use ghost::GhostPlugin;
 use pacman::PacManPlugin;
 use collision::CollisionPlugin;
 use crate::pacman::PacMan;
-
 
 #[derive(Resource)]
 struct TextEntity(Entity);

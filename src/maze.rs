@@ -39,21 +39,26 @@ impl Maze {
     fn new(cells: Vec<Vec<TileType>>) -> Self {
         Self { cells }
     }
-    pub fn is_walkable(&self, world_position: Vec3) -> bool {
-        let (x_index, y_index) = world_to_grid(world_position, 32.0);
-        // decrease the index from 12 to 10
-        let (x_index1, y_index1) = world_to_grid(world_position + Vec3 { x: 9.0, y: 0.0, z: 0.0 }, 32.0);
-        let (x_index2, y_index2) = world_to_grid(world_position + Vec3 { x: -9.0, y: 0.0, z: 0.0 }, 32.0);
-        let (x_index3, y_index3) = world_to_grid(world_position + Vec3 { x: 0.0, y: 9.0, z: 0.0 }, 32.0);
-        let (x_index4, y_index4) = world_to_grid(world_position + Vec3 { x: 0.0, y: -9.0, z: 0.0 }, 32.0);
-        if self.cells.get(y_index).and_then(|row| row.get(x_index)) == Some(&TileType::Wall) ||
-        self.cells.get(y_index1).and_then(|row| row.get(x_index1)) == Some(&TileType::Wall) ||
-        self.cells.get(y_index2).and_then(|row| row.get(x_index2)) == Some(&TileType::Wall) ||
-        self.cells.get(y_index3).and_then(|row| row.get(x_index3)) == Some(&TileType::Wall) ||
-        self.cells.get(y_index4).and_then(|row| row.get(x_index4)) == Some(&TileType::Wall) {
-            false
+    pub fn is_walkable(&self, world_position: Vec3) -> (bool,String) {
+        let (x_index1, y_index1) = world_to_grid(world_position + Vec3 { x: 12.0, y: 0.0, z: 0.0 }, 32.0); //right is wall
+        let (x_index2, y_index2) = world_to_grid(world_position + Vec3 { x: -12.0, y: 0.0, z: 0.0 }, 32.0); //left is wall
+        let (x_index3, y_index3) = world_to_grid(world_position + Vec3 { x: 0.0, y: 12.0, z: 0.0 }, 32.0); //up is wall
+        let (x_index4, y_index4) = world_to_grid(world_position + Vec3 { x: 0.0, y: -12.0, z: 0.0 }, 32.0); //down is wall
+        if self.cells.get(y_index1).and_then(|row| row.get(x_index1)) == Some(&TileType::Wall) {
+
+            (false, String::from("right"))
+        } else if self.cells.get(y_index2).and_then(|row| row.get(x_index2)) == Some(&TileType::Wall) {
+           
+            (false, String::from("left"))
+        } else if self.cells.get(y_index3).and_then(|row| row.get(x_index3)) == Some(&TileType::Wall) {
+           
+            (false, String::from("up"))
+        } else if self.cells.get(y_index4).and_then(|row| row.get(x_index4)) == Some(&TileType::Wall) {
+       
+            (false, String::from("down"))
         } else {
-            true
+           
+            (true, String::from(""))
         }
     }
 }
