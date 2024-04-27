@@ -2,6 +2,7 @@ mod maze;
 mod ghost;
 mod pacman;
 mod collision;
+mod pop_up_window;
 
 
 
@@ -10,15 +11,12 @@ use maze::MazePlugin;
 use ghost::GhostPlugin;
 use pacman::PacManPlugin;
 use collision::CollisionPlugin;
+use pop_up_window::{PopUpWindowPlugin, GameState};
 use crate::pacman::PacMan;
 
 
 #[derive(Resource)]
 struct TextEntity(Entity);
-
-// A unit struct to help identify the FPS UI component, since there may be many Text components
-#[derive(Component)]
-struct FpsText;
 
 // A unit struct to help identify the color-changing Text component
 #[derive(Component)]
@@ -28,6 +26,7 @@ fn main() {
     App::new()
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(DefaultPlugins)
+        .add_plugins(PopUpWindowPlugin)
         .add_plugins(MazePlugin)
         .add_plugins(PacManPlugin)
         .add_plugins(GhostPlugin)
@@ -38,6 +37,12 @@ fn main() {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>){
+    // Insert the game state resource
+    commands.insert_resource(GameState {
+        game_over: false,
+        player_won: false,
+    });
+
     // Text that displays the score of the player
     commands.spawn(TextBundle {
         text: Text::from_sections([

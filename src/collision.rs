@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::ghost::Ghost;
 use crate::pacman::PacMan;
-
+use crate::pop_up_window::GameState;
 pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {
@@ -13,6 +13,7 @@ impl Plugin for CollisionPlugin {
 fn collision_pacman_ghost(
     pac_man_query: Query<(&Transform, &PacMan)>,
     ghost_query: Query<(&Transform, &Ghost)>,
+    mut game_state: ResMut<GameState>
 ) {
     for (pac_man_transform, _) in pac_man_query.iter() {
         for (ghost_transform, _) in ghost_query.iter() {
@@ -24,7 +25,8 @@ fn collision_pacman_ghost(
             if distance < sum_radii {
                 // Handle collision between Pac-Man and ghost
                 // Example: Game over, decrease lives, etc.
-                info!("Game is over!")
+                info!("Game is over!");
+                game_state.game_over = true;
             }
         }
     }
