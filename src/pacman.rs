@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::maze::Maze;
 
-const PLAYER_SPEED: f32 = 1.0; // Speed at which the player moves
+const PLAYER_SPEED: f32 = 2.0; // Speed at which the player moves
 
 
 pub struct PacManPlugin;
@@ -40,10 +40,10 @@ fn pac_man_movement(keyboard_input: Res<ButtonInput<KeyCode>>,maze: Res<Maze>, m
     // Iterate through all input and change movement
     for input in pressed_inputs{
         match input {
-            KeyCode::ArrowUp => movement += Vec2::new(0.0, 1.0),
-            KeyCode::ArrowDown => movement += Vec2::new(0.0, -1.0),
-            KeyCode::ArrowLeft => movement += Vec2::new(-1.0, 0.0),
-            KeyCode::ArrowRight => movement += Vec2::new(1.0, 0.0),
+            KeyCode::ArrowUp => movement += Vec2::new(0.0, PLAYER_SPEED),
+            KeyCode::ArrowDown => movement += Vec2::new(0.0, -PLAYER_SPEED),
+            KeyCode::ArrowLeft => movement += Vec2::new(-PLAYER_SPEED, 0.0),
+            KeyCode::ArrowRight => movement += Vec2::new(PLAYER_SPEED, 0.0),
             _ => {}
         }
     }
@@ -61,6 +61,7 @@ fn pac_man_movement(keyboard_input: Res<ButtonInput<KeyCode>>,maze: Res<Maze>, m
             if maze.is_walkable(transform.translation + movement.extend(0.0)){
                 // Update Pac-Man's position
                 transform.translation += movement.extend(0.0);
+                info!("I'm at the position: {:?}", transform.translation);
             }
         }
     }
