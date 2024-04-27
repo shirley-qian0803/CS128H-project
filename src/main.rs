@@ -5,9 +5,7 @@ mod collision;
 
 
 
-use bevy::log::tracing_subscriber::fmt::format;
 use bevy::prelude::*;
-use bevy::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin};
 use maze::MazePlugin;
 use ghost::GhostPlugin;
 use pacman::PacManPlugin;

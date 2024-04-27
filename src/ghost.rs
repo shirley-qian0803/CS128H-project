@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use crate::maze::Maze;
 use rand::prelude::*;
-use crate::pacman::PacMan;
 
 const GHOST_SPEED: f32 = 60.0; // Speed at which the ghost moves
 

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use std::fs;
-use crate::pacman::{self, PacMan};
+use crate::pacman::PacMan;
 
 
 // Assuming TileType and main function are defined as before
