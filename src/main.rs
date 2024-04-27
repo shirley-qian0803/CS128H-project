@@ -4,8 +4,6 @@ mod pacman;
 mod collision;
 mod pop_up_window;
 
-
-
 use bevy::prelude::*;
 use maze::MazePlugin;
 use ghost::GhostPlugin;
@@ -13,7 +11,6 @@ use pacman::PacManPlugin;
 use collision::CollisionPlugin;
 use pop_up_window::{PopUpWindowPlugin, GameState};
 use crate::pacman::PacMan;
-
 
 #[derive(Resource)]
 struct TextEntity(Entity);

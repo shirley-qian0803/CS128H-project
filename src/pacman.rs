@@ -58,9 +58,9 @@ fn pac_man_movement(keyboard_input: Res<ButtonInput<KeyCode>>,maze: Res<Maze>, m
 
             // check whether it's walkable
             info!("Next position: {:?}", transform.translation + movement.extend(0.0));
-            info!("Is walkable: {}", maze.is_walkable(transform.translation + movement.extend(0.0)));
+            info!("Is walkable: {}", maze.is_walkable(transform.translation + movement.extend(0.0)).0);
             info!("Grid position: {:?}", world_to_grid(transform.translation + movement.extend(0.0), 32.0));
-            if maze.is_walkable(transform.translation + movement.extend(0.0)){
+            if maze.is_walkable(transform.translation + movement.extend(0.0)).0 {
                 // Update Pac-Man's position
                 transform.translation += movement.extend(0.0);
                 info!("I'm at the position: {:?}", transform.translation);
