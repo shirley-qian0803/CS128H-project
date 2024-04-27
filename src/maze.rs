@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use std::fs;
-use crate::pacman::PacMan;
+use crate::pacman::{self, PacMan};
 
 
 // Assuming TileType and main function are defined as before
@@ -118,12 +118,12 @@ fn load_maze(file_path: &str) -> Vec<Vec<TileType>> {
 }
 
 fn pacman_eat_dots(
-    pacman_query: Query<&Transform, With<PacMan>>, // Assuming you have a Pacman component
+    mut pacman_query: Query<(&Transform,&mut PacMan), With<PacMan>>, // Assuming you have a Pacman component
     mut maze: ResMut<Maze>,
     mut commands: Commands,
-    dot_query: Query<(Entity, &Transform), With<Dot>>, // Assuming you have a Dot component
+    dot_query: Query<(Entity, &Transform), With<Dot>>, 
 ) {
-    if let Some(pacman_transform) = pacman_query.iter().next() {
+    if let Some((pacman_transform, mut pacman)) = pacman_query.iter_mut().next() {
         // Convert Pac-Man's position to map grid coordinates
         let map_x = ((pacman_transform.translation.x + 615.0) / 32.0) as usize; // Adjust according to your scale
         let map_y = (13.0 - (pacman_transform.translation.y + 100.0) / 32.0 )as usize;
@@ -134,8 +134,9 @@ fn pacman_eat_dots(
                 commands.entity(entity).despawn();
             }
 
-            // Logic to respawn the map can be triggered here or in another system
-            // depending on your game's architecture
+            // Add the score
+            pacman.score += 10.0;
+            info!("The score I have is {}", pacman.score);
         }
     }
 }

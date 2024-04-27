@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::maze::Maze;
 
-const PLAYER_SPEED: f32 = 2.0; // Speed at which the player moves
+const PLAYER_SPEED: f32 = 3.0; // Speed at which the player moves
 
 
 pub struct PacManPlugin;
@@ -17,6 +17,7 @@ impl Plugin for PacManPlugin {
 #[derive(Component)]
 pub struct PacMan {
     pub speed: f32, // Speed of the player
+    pub score: f32
 }
 
 fn spawn_pacman(mut commands: Commands, asset_server: Res<AssetServer>){
@@ -29,6 +30,7 @@ fn spawn_pacman(mut commands: Commands, asset_server: Res<AssetServer>){
         })
         .insert(PacMan {
             speed: PLAYER_SPEED,
+            score: 0.0,
         });
 }
 
