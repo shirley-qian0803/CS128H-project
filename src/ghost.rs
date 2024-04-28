@@ -2,16 +2,10 @@ use bevy::prelude::*;
 use crate::maze::Maze;
 use rand::prelude::*;
 
-const GHOST_SPEED: f32 = 88.0; // Speed at which the ghost moves
+const GHOST_SPEED: f32 = 66.0; // Speed at which the ghost moves
 
 pub struct GhostPlugin;
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub enum GhostMode {
-    Chase,
-    Scatter,
-    Frightened,
-}
 
 impl Plugin for GhostPlugin {
     fn build(&self, app: &mut App) {
@@ -25,7 +19,6 @@ impl Plugin for GhostPlugin {
 pub struct Ghost {
     pub speed: f32, // Speed of the player
     pub direction: Vec2, // Current movement direction
-    pub ghost_mode: GhostMode,
 }
 
 
@@ -44,7 +37,6 @@ fn spawn_ghost(mut commands: Commands, asset_server: Res<AssetServer>){
             .insert(Ghost{
                 speed: GHOST_SPEED,
                 direction: Vec2::ZERO, // Initialize direction to zero
-                ghost_mode: GhostMode::Chase
             });
     }
 }
@@ -53,52 +45,16 @@ fn ghost_move_system(
     time: Res<Time>,
     maze: Res<Maze>,
     mut ghost_query: Query<(&mut Transform, &mut Ghost)>,
-    pac_man_query: Query<&Transform, Without<Ghost>>,
 ) {
     for (mut ghost_transform, mut ghost) in ghost_query.iter_mut() {
-        if ghost.ghost_mode == GhostMode::Scatter{
-            let (x_index, y_index) = world_to_grid(ghost_transform.translation, 32.0);
-            if x_index <= 16 && x_index >= 14 && y_index == 5{
-                ghost_transform.translation.x = -117.89949;
-                ghost_transform.translation.y = 174.38478;
-                break;
-            } 
-            if x_index == 15 && y_index == 4{
-                ghost_transform.translation.y = 174.38478 + 20.0;
-            }
-
-            if ghost.direction == Vec2::ZERO {
-                ghost.direction = Vec2::new(
-                    random::<f32>() - 0.5, // Random number between -0.5 and 0.5 for X direction
-                    random::<f32>() - 0.5, // Random number between -0.5 and 0.5 for Y direction
-                ).normalize(); // Normalize to ensure consistent speed
-            }
-
-        } else if ghost.ghost_mode == GhostMode::Chase{     
-            // Implement chase mode logic here
-            
-            if let Ok(pac_man_transform) = pac_man_query.get_single() {
-                // Calculate the direction towards the Pac-Man
-                let direction = (pac_man_transform.translation - ghost_transform.translation).truncate().normalize();
-                if direction.length() <= 64.0 {
-                    ghost.direction = direction;
-                }
-                let next_position = ghost_transform.translation + ghost.direction.extend(0.0) * ghost.speed * time.delta_seconds();
-
-        // Check if the next position is walkable in the maze
-        if maze.is_walkable(next_position).0 {
-            ghost_transform.translation = next_position;
-        }
-            }
-            
-        } else if ghost.ghost_mode == GhostMode::Frightened{
-            // Implement frightened mode logic here
-        }
         if ghost.direction == Vec2::ZERO {
-            ghost.direction = Vec2::new(
-                random::<f32>() - 0.5, // Random number between -0.5 and 0.5 for X direction
-                random::<f32>() - 0.5, // Random number between -0.5 and 0.5 for Y direction
-            ).normalize(); // Normalize to ensure consistent speed
+            let direction_index = random::<u8>() % 4; 
+            ghost.direction = match direction_index {
+                0 => Vec2::new(1.0, 0.0), 
+                1 => Vec2::new(-1.0, 0.0), 
+                2 => Vec2::new(0.0, 1.0),  
+                _ => Vec2::new(0.0, -1.0), 
+            };
         }
         let next_position = ghost_transform.translation + ghost.direction.extend(0.0) * ghost.speed * time.delta_seconds();
 
@@ -107,33 +63,13 @@ fn ghost_move_system(
             ghost_transform.translation = next_position;
         } else {
             // If the next position is not walkable, generate a new random direction
-            if maze.is_walkable(next_position).1 == "left" {
-                ghost.direction = Vec2::new(
-                    random::<f32>(),
-                    random::<f32>() - 0.5,
-                ).normalize();
-            } else if maze.is_walkable(next_position).1 == "right" {
-                ghost.direction = Vec2::new(
-                    random::<f32>() - 1.0,
-                    random::<f32>() - 0.5,
-                ).normalize();
-            } else if maze.is_walkable(next_position).1 == "up" {
-                ghost.direction = Vec2::new(
-                    random::<f32>() - 0.5,
-                    random::<f32>() - 1.0,
-                ).normalize();
-            } else { //down
-                ghost.direction = Vec2::new(
-                    random::<f32>() - 0.5,
-                    random::<f32>(),
-                ).normalize();
+            let direction_index = random::<u8>() % 4; // Random number between 0 and 3
+            ghost.direction = match direction_index {
+                0 => Vec2::new(1.0, 0.0),  // Right
+                1 => Vec2::new(-1.0, 0.0), // Left
+                2 => Vec2::new(0.0, 1.0),  // Up
+                _ => Vec2::new(0.0, -1.0), // Down
             }
         } 
     }
-}
-
-fn world_to_grid(world_position: Vec3, cell_size: f32) -> (usize, usize) {
-    let grid_x = ((world_position.x + 615.0) / cell_size).floor() as usize;
-    let grid_y = (13.0 - (world_position.y + 100.0) / cell_size).floor() as usize;
-    (grid_x, grid_y)
 }
