@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use crate::maze::Maze;
 use rand::prelude::*;
 
-const GHOST_SPEED: f32 = 66.0; // Speed at which the ghost moves
+const GHOST_SPEED: f32 = 100.0; // Speed at which the ghost moves
 
 pub struct GhostPlugin;
 
@@ -17,7 +17,7 @@ impl Plugin for GhostPlugin {
 // Define the Ghost struct here
 #[derive(Component)]
 pub struct Ghost {
-    pub speed: f32, // Speed of the player
+    pub speed: f32, // Speed of the ghost
     pub direction: Vec2, // Current movement direction
 }
 
@@ -48,12 +48,12 @@ fn ghost_move_system(
 ) {
     for (mut ghost_transform, mut ghost) in ghost_query.iter_mut() {
         if ghost.direction == Vec2::ZERO {
-            let direction_index = random::<u8>() % 4; 
+            let direction_index = random::<u8>() % 4; // Random number between 0 and 3
             ghost.direction = match direction_index {
-                0 => Vec2::new(1.0, 0.0), 
-                1 => Vec2::new(-1.0, 0.0), 
-                2 => Vec2::new(0.0, 1.0),  
-                _ => Vec2::new(0.0, -1.0), 
+                0 => Vec2::new(1.0, 0.0),  // Right
+                1 => Vec2::new(-1.0, 0.0),  // Left
+                2 => Vec2::new(0.0, 1.0),   // Up
+                _ => Vec2::new(0.0, -1.0), // Down
             };
         }
         let next_position = ghost_transform.translation + ghost.direction.extend(0.0) * ghost.speed * time.delta_seconds();
@@ -63,12 +63,12 @@ fn ghost_move_system(
             ghost_transform.translation = next_position;
         } else {
             // If the next position is not walkable, generate a new random direction
-            let direction_index = random::<u8>() % 4; // Random number between 0 and 3
+            let direction_index = random::<u8>() % 4; 
             ghost.direction = match direction_index {
-                0 => Vec2::new(1.0, 0.0),  // Right
-                1 => Vec2::new(-1.0, 0.0), // Left
-                2 => Vec2::new(0.0, 1.0),  // Up
-                _ => Vec2::new(0.0, -1.0), // Down
+                0 => Vec2::new(1.0, 0.0), 
+                1 => Vec2::new(-1.0, 0.0),
+                2 => Vec2::new(0.0, 1.0), 
+                _ => Vec2::new(0.0, -1.0), 
             }
         } 
     }
